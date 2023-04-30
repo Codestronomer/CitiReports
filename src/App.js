@@ -1,23 +1,29 @@
-import logo from './logo.svg';
 import './App.css';
+import { Incident } from './components/home';
+import Navbar from './components/navbar';
+import { BrowserRouter } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { themeSettings } from './theme';
 
-function App() {
+function App () {
+  const mode = useSelector((state) => state.mode);
+  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className='app'>
+      <BrowserRouter>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <Navbar />
+          <Incident />
+          {/* <Routes> */}
+          {/* <Route path='/' element={<LoginPage />} /> */}
+          {/* </Routes> */}
+        </ThemeProvider>
+      </BrowserRouter>
     </div>
   );
 }

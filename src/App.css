@@ -36,3 +36,77 @@
     transform: rotate(360deg);
   }
 }
+
+
+.AddIncidentForm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px;
+}
+
+.AddIncidentForm-input {
+  margin: 5px;
+  padding: 5px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.AddIncidentForm-locationBtn {
+  margin-left: 10px;
+  padding: 5px;
+  border-radius: 3px;
+  border: none;
+  background-color: #4285f4;
+  color: #fff;
+  cursor: pointer;
+}
+
+.AddIncidentForm-submitBtn {
+  margin-top: 10px;
+  padding: 5px;
+  border-radius: 3px;
+  border: none;
+  background-color: #4285f4;
+  color: #fff;
+  cursor: pointer;
+}
+
+.IncidentList {
+  display: flex;
+  /* flex-wrap: wrap; */
+  justify-content: space-between;
+  margin: 20px;
+  gap: 20px;
+}
+
+.IncidentList-incident {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+  width: 300px;
+  background-color: #f1f1f1;
+  border-radius: 5px;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+}
+
+.IncidentList-incident h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.IncidentList-incident p {
+  margin: 5px 0;
+  font-size: 14px;
+  text-align: center;
+}
+
+.report {
+  background: rgb(81, 129, 212);
+  padding: 10px;
+  border-radius: 8px;
+  width: 300px;
+}
