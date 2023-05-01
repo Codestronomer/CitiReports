@@ -48,7 +48,7 @@ export const IncidentForm = (props) => {
       formData.append('images[]', state.images[i]);
     }
 
-    fetch('/incidents', {
+    fetch('http://localhost:4404/citireports/incidents', {
       method: 'POST',
       body: formData,
     })
@@ -67,7 +67,7 @@ export const IncidentForm = (props) => {
 
   return (
     <FlexBetween sx={{}}>
-      <form onSubmit={handleSubmit} className="incidentForm">
+      <form onSubmit={handleSubmit} className="incidentForm" method="POST">
         <div className='incidentText'>
           <Typography sx={{ textAlign: 'center', fontWeight: 700 }} variant="h2">
             Report an Incident

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Button,
@@ -36,7 +36,20 @@ const Navbar = () => {
   const navigate = useNavigate();
   const userState = useSelector((state) => state.user);
   const [user, setUser] = useState();
+  const [fullName, setFullname] = useState('');
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
+
+  useEffect(() => {
+    const updateUser = () => {
+      if (userState != null) {
+        setUser(userState);
+      };
+      if (user) {
+        setFullname(`${user.username}`);
+      }
+    }
+    updateUser()
+  }, [userState]);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isOpen = Boolean(anchorEl);
@@ -51,7 +64,6 @@ const Navbar = () => {
   // const primaryLight = theme.palette.primary.light;
   // const alt = theme.palette.background.alt;
 
-  const fullName = ``;
 
   return (
     <AppBar

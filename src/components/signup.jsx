@@ -33,7 +33,7 @@ export const Signup = () => {
       setError('Passwords do not match');
       return;
     }
-    fetch('/signup', {
+    fetch('http://localhost:4404/citireports/signup', {
       method: 'POST',
       body: JSON.stringify(state),
       headers: {
@@ -42,6 +42,8 @@ export const Signup = () => {
     })
       .then(res => {
         if (res.status === 200) {
+          state.password = "";
+          state.confirmPassword = "";
           dispatch(setLogin({user: state}));
           navigate("/");
         } else {

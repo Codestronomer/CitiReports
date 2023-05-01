@@ -3,35 +3,40 @@ import { Button, Typography, useMediaQuery } from '@mui/material';
 import FlexBetween from './flexBetween';
 import { useTheme } from '@emotion/react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '../state';
 
 export const Login = () => {
   const { palette } = useTheme();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isNonMobile = useMediaQuery("(min-width: 600px)");
   const [state, setState] = useState({
     email: '',
     password: ''
   });
+  // const isNonMobile = useMediaQuery("(min-width: 600px)");
 
   const handleInputChange = (event) => {
     const { value, name } = event.target;
-    setState({
+    setState(prevState => ({
+      ...prevState,
       [name]: value
-    });
+    }));
   };
 
   const onSubmit = (event) => {
     event.preventDefault();
-    fetch('/api/authenticate', {
+    fetch('http://localhost:4404/citireports/login', {
       method: 'POST',
-      body: JSON.stringify(this.state),
+      body: JSON.stringify(state),
       headers: {
         'Content-Type': 'application/json'
       }
     })
       .then(res => {
         if (res.status === 200) {
-          // this.props.history.push('/');
+          dispatch(setLogin({user: state}))
+          navigate('/');
         } else {
           const error = new Error(res.error);
           throw error;
@@ -52,7 +57,7 @@ export const Login = () => {
             name='email'
             placeholder='Enter email'
             value={state.email}
-            onChange={() => handleInputChange}
+            onChange={handleInputChange}
             required
           />
           <label>Password:</label>

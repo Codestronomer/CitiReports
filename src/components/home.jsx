@@ -22,6 +22,10 @@ function IncidentList (props) {
       <h3>{incident.category}</h3>
       <p>{incident.description}</p>
       <p>{incident.location}</p>
+      {incident.images.map((image) => {
+        <img src={image} alt="incident image" />
+      })
+      };
     </div>
   ));
 

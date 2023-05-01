@@ -2,7 +2,7 @@
   "name": "citireports",
   "version": "0.1.0",
   "private": true,
-  "proxy": "127.0.0.1:4404/citireports",
+  "proxy": "",
   "dependencies": {
     "@emotion/react": "^11.10.8",
     "@emotion/styled": "^11.10.8",
