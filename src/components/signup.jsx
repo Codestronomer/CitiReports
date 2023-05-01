@@ -1,177 +1,107 @@
 import React, { useState } from 'react';
-import Form from 'react-validation/build/form';
-import Input from 'react-validation/build/input';
-import CheckButton from 'react-validation/build/button';
-// import { isEmail } from 'validator';
+import { Button, Typography, useMediaQuery } from '@mui/material';
+import FlexBetween from './flexBetween';
+import { useTheme } from '@emotion/react';
 
-import AuthService from '../services/auth.service';
+export const Signup = () => {
+  const { palette } = useTheme();
+  const isNonMobile = useMediaQuery("(min-width: 600px)");
+  const [state, setState] = useState({
+    email: '',
+    username: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [error, setError] = useState('');
 
-const required = (value) => {
-  if (!value) {
-    return (
-      <div className='alert alert-danger' role='alert'>
-        This field is required!
-      </div>
-    );
-  }
-};
-
-// const email = (value) => {
-//   if (!isEmail(value)) {
-//     return (
-//       <div className='alert alert-danger' role='alert'>
-//         This is not a valid email.
-//       </div>
-//     );
-//   }
-// };
-
-const vusername = (value) => {
-  if (value.length < 3 || value.length > 20) {
-    return (
-      <div className='alert alert-danger' role='alert'>
-        The username must be between 3 and 20 characters.
-      </div>
-    );
-  }
-};
-
-const vpassword = (value) => {
-  if (value.length < 6 || value.length > 40) {
-    return (
-      <div className='alert alert-danger' role='alert'>
-        The password must be between 6 and 40 characters.
-      </div>
-    );
-  }
-};
-
-export const Register = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState('');
-  const form = React.useRef();
-  const checkBtn = React.useRef();
-
-  const onChangeUsername = (e) => {
-    setUsername(e.target.value);
+  const handleInputChange = (event) => {
+    const { value, name } = event.target;
+    setState(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
   };
 
-  const onChangeEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const onChangePassword = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleRegister = (e) => {
-    e.preventDefault();
-
-    setMessage('');
-    setSuccessful(false);
-
-    form.current.validateAll();
-
-    if (checkBtn.current.context._errors.length === 0) {
-      AuthService.register(username, email, password).then(
-        (response) => {
-          setMessage(response.data.message);
-          setSuccessful(true);
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          setSuccessful(false);
-          setMessage(resMessage);
-        }
-      );
+  const onSubmit = (event) => {
+    event.preventDefault();
+    if (state.password !== state.confirmPassword) {
+      setError('Passwords do not match');
+      return;
     }
+    fetch('/api/signup', {
+      method: 'POST',
+      body: JSON.stringify(state),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(res => {
+        if (res.status === 200) {
+          // this.props.history.push('/');
+        } else {
+          const error = new Error(res.error);
+          throw error;
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        setError('Signup failed');
+      });
   };
 
   return (
-    <div className='col-md-12'>
-      <div className='card card-container'>
-        <img
-          src='//ssl.gstatic.com/accounts/ui/avatar_2x.png'
-          alt='profile-img'
-          className='profile-img-card'
-        />
-
-        <Form onSubmit={handleRegister} ref={form}>
-          {!successful && (
-            <div>
-              <div className='form-group'>
-                <label htmlFor='username'>Username</label>
-                <Input
-                  type='text'
-                  className='form-control'
-                  name='username'
-                  value={username}
-                  onChange={onChangeUsername}
-                  validations={[required, vusername]}
-                />
-              </div>
-
-              <div className='form-group'>
-                <label htmlFor='email'>Email</label>
-                <Input
-                  type='text'
-                  className='form-control'
-                  name='email'
-                  value={email}
-                  onChange={onChangeEmail}
-                  validations={[required, email]}
-                />
-              </div>
-
-              <div className='form-group'>
-                <label htmlFor='password'>Password</label>
-                <Input
-                  type='password'
-                  className='form-control'
-                  name='password'
-                  value={password}
-                  onChange={onChangePassword}
-                  validations={[required, vpassword]}
-                />
-              </div>
-
-              <div className='form-group'>
-                <button className='btn btn-primary btn-block'>Sign Up</button>
-              </div>
-            </div>
-          )}
-
-          {message && (
-            <div className='form-group'>
-              <div
-                className={
-                  this.state.successful
-                    ? 'alert alert-success'
-                    : 'alert alert-danger'
-                }
-                role='alert'
-              >
-                {this.state.message}
-              </div>
-            </div>
-          )}
-          <CheckButton
-            style={{ display: 'none' }}
-            ref={c => {
-              checkBtn(c);
-            }}
+    <FlexBetween sx={{}}>
+        <form onSubmit={onSubmit} className="form">
+          <Typography sx={{ textAlign: 'center', fontWeight: 700}} variant="h2">Signup for CitiReports</Typography>
+          {error && <div className="error">{error}</div>}
+          <label>Username:</label>
+          <input className='form-input'
+                 type='text'
+                 name='username'
+                 placeholder='Enter username'
+                 value={state.username}
+                 onChange={handleInputChange}
+                 required
+                 />
+          <label>Email Address:</label>
+          <input className="form-input"
+            type='email'
+            name='email'
+            placeholder='Enter email'
+            value={state.email}
+            onChange={handleInputChange}
+            required
           />
-        </Form>
-      </div>
-    </div>
+          <label>Password:</label>
+          <input className="form-input"
+            type='password'
+            name='password'
+            placeholder='Enter password'
+            value={state.password}
+            onChange={handleInputChange}
+            required
+          />
+          <label>Confirm Password:</label>
+          <input className="form-input"
+            type='password'
+            name='confirmPassword'
+            placeholder='Confirm password'
+            value={state.confirmPassword}
+            onChange={handleInputChange}
+            required
+          />
+          <Button className="form-button" sx={{
+                      maxWidth: '80px',
+                      textAlign: 'center',
+                      justifyContent:'center',
+                      alignSelf: 'center',
+                      color: palette.background.alt,
+                      background: palette.primary.main,
+                      fontWeight: 700,
+                      fontSize: '15px'}} 
+                      type='submit'
+          >Signup</Button>
+        </form>
+    </FlexBetween>
   );
 };

@@ -19,6 +19,7 @@ import {
   DarkModeOutlined,
   LightModeOutlined,
   NotificationsOutlined,
+  NotificationImportant,
   Menu as MenuIcon,
   Close,
   SettingsOutlined
@@ -45,6 +46,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   const neutralLight = theme.palette.neutral.light;
   const dark = theme.palette.neutral.dark;
   const background = theme.palette.background.default;
+  const red = theme.palette.primary.main;
   // const primaryLight = theme.palette.primary.light;
   // const alt = theme.palette.background.alt;
 
@@ -61,16 +63,18 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         {/* LEFT SIDE of the NavBar  */}
         <FlexBetween>
-          <IconButton>
-            <Typography variant='h1'>
-              CitiReports
-            </Typography>
-          </IconButton>
+          <FlexBetween sx={{marginRight: '100px'}}>
+              <IconButton onClick={() => navigate('/')}>
+                  <Typography variant='h1' sx={{fontWeight: 700,  color: red}}>
+                    CitiReports
+                  </Typography>
+              </IconButton>
+          </FlexBetween>
           {isNonMobileScreens && (
             <FlexBetween
               backgroundColor={neutralLight}
               borderRadius='9px'
-              gap='3rem'
+              gap='6rem'
               padding='0.1rem 1.5rem'
             >
               <InputBase placeholder='What are you looking for?' />
@@ -98,7 +102,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 <IconButton>
                   <SettingsOutlined sx={{ fontSize: '25px' }} />
                 </IconButton>
-                <NotificationsOutlined sx={{ fontSize: '25px' }} />
+                <NotificationImportant sx={{ color: dark, fontSize: '25px' }} />
                 <FlexBetween>
                   <Button
                     onClick={handleClick}
@@ -185,7 +189,9 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                       <LightModeOutlined sx={{ color: dark, fontSize: '25px' }} />
                       )}
                 </IconButton>
-                <NotificationsOutlined sx={{ fontSize: '25px' }} />
+                <IconButton>
+                  <NotificationsOutlined sx={{ fontSize: '25px' }} />
+                </IconButton>
                 <IconButton>
                   <SettingsOutlined sx={{ fontSize: '25px' }} />
                 </IconButton>

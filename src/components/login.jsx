@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
+import { Button, Typography, useMediaQuery } from '@mui/material';
+import FlexBetween from './flexBetween';
+import { useTheme } from '@emotion/react';
 
 export const Login = () => {
+  const { palette } = useTheme();
+  const isNonMobile = useMediaQuery("(min-width: 600px)");
   const [state, setState] = useState({
     email: '',
     password: ''
@@ -36,25 +41,39 @@ export const Login = () => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
-      <h1>Login Below!</h1>
-      <input
-        type='email'
-        name='email'
-        placeholder='Enter email'
-        value={state.email}
-        onChange={() => handleInputChange}
-        required
-      />
-      <input
-        type='password'
-        name='password'
-        placeholder='Enter password'
-        value={this.state.password}
-        onChange={this.handleInputChange}
-        required
-      />
-      <input type='submit' value='Submit' />
-    </form>
+    <FlexBetween sx={{}}>
+        <form onSubmit={onSubmit} className="form">
+          <Typography sx={{ textAlign: 'center', fontWeight: 700}}variant="h2">Login to CitiReports</Typography>
+          <label>Email Address:</label>
+          <input className="form-input"
+            type='email'
+            name='email'
+            placeholder='Enter email'
+            value={state.email}
+            onChange={() => handleInputChange}
+            required
+          />
+          <label>Password:</label>
+          <input className="form-input"
+            type='password'
+            name='password'
+            placeholder='Enter password'
+            value={state.password}
+            onChange={handleInputChange}
+            required
+          />
+          <Button className="form-button" sx={{
+                      maxWidth: '80px',
+                      textAlign: 'center',
+                      justifyContent:'center',
+                      alignSelf: 'center',
+                      color: palette.background.alt,
+                      background: palette.primary.main,
+                      fontWeight: 700,
+                      fontSize: '15px'}} 
+                      type='submit' value='Submit'
+          >Login</Button>
+        </form>
+    </FlexBetween>
   );
 };
