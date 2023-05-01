@@ -2,10 +2,15 @@ import React, { useState } from 'react';
 import { Button, Typography, useMediaQuery } from '@mui/material';
 import FlexBetween from './flexBetween';
 import { useTheme } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setLogin } from '../state';
 
 export const Signup = () => {
   const { palette } = useTheme();
   const isNonMobile = useMediaQuery("(min-width: 600px)");
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [state, setState] = useState({
     email: '',
     username: '',
@@ -28,7 +33,7 @@ export const Signup = () => {
       setError('Passwords do not match');
       return;
     }
-    fetch('/api/signup', {
+    fetch('/signup', {
       method: 'POST',
       body: JSON.stringify(state),
       headers: {
@@ -37,7 +42,8 @@ export const Signup = () => {
     })
       .then(res => {
         if (res.status === 200) {
-          // this.props.history.push('/');
+          dispatch(setLogin({user: state}));
+          navigate("/");
         } else {
           const error = new Error(res.error);
           throw error;
@@ -101,6 +107,12 @@ export const Signup = () => {
                       fontSize: '15px'}} 
                       type='submit'
           >Signup</Button>
+          <Typography sx={{textAlign: 'center',
+                          fontWeight: 700,
+                          cursor: 'pointer'}}
+                       onClick={() => navigate('/login')}>
+            Already have an account? Login
+        </Typography>
         </form>
     </FlexBetween>
   );

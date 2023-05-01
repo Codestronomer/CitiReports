@@ -22,19 +22,20 @@ import {
   NotificationImportant,
   Menu as MenuIcon,
   Close,
-  SettingsOutlined
+  SettingsOutlined,
+  AccountCircle
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { setMode, setLogout } from '../state';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from './flexBetween';
-import profileImage from './profile2.png';
 
-const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
+const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user);
+  const userState = useSelector((state) => state.user);
+  const [user, setUser] = useState();
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -50,7 +51,7 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
   // const primaryLight = theme.palette.primary.light;
   // const alt = theme.palette.background.alt;
 
-  const fullName = `${user.firstName} ${user.lastName}`;
+  const fullName = ``;
 
   return (
     <AppBar
@@ -104,39 +105,48 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 </IconButton>
                 <NotificationImportant sx={{ color: dark, fontSize: '25px' }} />
                 <FlexBetween>
-                  <Button
-                    onClick={handleClick}
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      textTransform: 'none',
-                      gap: '1rem'
-                    }}
-                  >
-                    <Box
-                      component='img'
-                      alt='profile'
-                      src={profileImage}
-                      height='32px'
-                      width='32px'
-                      borderRadius='50%'
-                      sx={{ objectFit: 'cover' }}
-                    />
-                  </Button>
-                  <Menu
-                    anchorEl={anchorEl}
-                    open={isOpen}
-                    onClose={handleClose}
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                  >
-                    <MenuItem onClick={() => {
-                      dispatch(setLogout);
-                      navigate('/');
-                    }}
-                    >Log Out
-                    </MenuItem>
-                  </Menu>
+                  {user != null ? (
+                    <div>
+                      <Button
+                        onClick={handleClick}
+                        sx={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          textTransform: 'none',
+                          gap: '1rem'
+                        }}
+                      >
+                        <IconButton>
+                          <AccountCircle sx={{ fontSize: '25px', color: dark}} />
+                        </IconButton>
+                      </Button>
+                      <Menu
+                        anchorEl={anchorEl}
+                        open={isOpen}
+                        onClose={handleClose}
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+                      >
+                        <MenuItem onClick={() => {
+                          dispatch(setLogout);
+                          navigate('/');
+                        }}
+                        >Log Out
+                        </MenuItem>
+                      </Menu>
+                    </div>
+                  ) : (
+                    <div style={{display: 'flex'}}>
+                      <Typography variant='h5' sx={{color: theme.palette.neutral.dark,
+                                                    fontWeight: 700,
+                                                    margin: '5px',
+                                                    cursor: 'pointer'}} onClick={() => navigate('/login')}>Login  /</Typography>
+                      <Typography variant='h5' sx={{color: theme.palette.neutral.dark,
+                                                    fontWeight: 700,
+                                                    margin: '5px',
+                                                    cursor: 'pointer'}} onClick={() => navigate('/signup')}>Signup</Typography>
+                    </div>
+                  )}
                 </FlexBetween>
               </FlexBetween>
               )
@@ -195,36 +205,51 @@ const Navbar = ({ isSidebarOpen, setIsSidebarOpen }) => {
                 <IconButton>
                   <SettingsOutlined sx={{ fontSize: '25px' }} />
                 </IconButton>
-                <FormControl variant='standard' value={fullName}>
-                  <Select
-                    value={fullName}
-                    sx={{
-                      backgroundColor: neutralLight,
-                      width: '150px',
-                      borderRadius: '0.25rem',
-                      p: '0.25rem 1rem',
-                      '& .MuiSvgIcon-root': {
-                        pr: '0.25rem',
-                        width: '3rem'
-                      },
-                      '& .MuiSelect-select:focus': {
-                        backgroundColor: neutralLight
-                      }
-                    }}
-                    input={<InputBase />}
-                  >
-                    <MenuItem value={fullName}>
-                      <Typography>{fullName}</Typography>
-                    </MenuItem>
-                    <MenuItem onClick={() => {
-                      dispatch(setLogout());
-                      navigate('/');
-                    }}
-                    >
-                      Log Out
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                {user != null ? (
+                  <div>
+                    <FormControl variant='standard' value={fullName}>
+                      <Select
+                        value={fullName}
+                        sx={{
+                          backgroundColor: neutralLight,
+                          width: '150px',
+                          borderRadius: '0.25rem',
+                          p: '0.25rem 1rem',
+                          '& .MuiSvgIcon-root': {
+                            pr: '0.25rem',
+                            width: '3rem'
+                          },
+                          '& .MuiSelect-select:focus': {
+                            backgroundColor: neutralLight
+                          }
+                        }}
+                        input={<InputBase />}
+                      >
+                        <MenuItem value={fullName}>
+                          <Typography>{fullName}</Typography>
+                        </MenuItem>
+                        <MenuItem onClick={() => {
+                          dispatch(setLogout());
+                          navigate('/');
+                        }}
+                        >
+                          Log Out
+                        </MenuItem>
+                      </Select>
+                    </FormControl>
+                  </div>
+                ) : (
+                    <div style={{display: 'flex'}}>
+                      <Typography variant='h5' sx={{color: theme.palette.neutral.dark,
+                                                    fontWeight: 700,
+                                                    margin: '5px',
+                                                    cursor: 'pointer'}} onClick={() => navigate('/login')}>Login  /</Typography>
+                      <Typography variant='h5' sx={{color: theme.palette.neutral.dark,
+                                                    fontWeight: 700,
+                                                    margin: '5px',
+                                                    cursor: 'pointer'}} onClick={() => navigate('/signup')}>Signup</Typography>
+                    </div>
+                  )}
               </FlexBetween>
             </Box>
         )}

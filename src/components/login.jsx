@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Button, Typography, useMediaQuery } from '@mui/material';
 import FlexBetween from './flexBetween';
 import { useTheme } from '@emotion/react';
+import { useNavigate } from 'react-router-dom';
 
 export const Login = () => {
   const { palette } = useTheme();
+  const navigate = useNavigate();
   const isNonMobile = useMediaQuery("(min-width: 600px)");
   const [state, setState] = useState({
     email: '',
@@ -73,6 +75,11 @@ export const Login = () => {
                       fontSize: '15px'}} 
                       type='submit' value='Submit'
           >Login</Button>
+          <Typography sx={{textAlign: 'center',
+                          fontWeight: 700,
+                          cursor: 'pointer'}} onClick={() => navigate('/signup')}>
+            Don't have an account? Sign Up
+        </Typography>
         </form>
     </FlexBetween>
   );
