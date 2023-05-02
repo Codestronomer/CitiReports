@@ -48,7 +48,7 @@ export const IncidentForm = (props) => {
       formData.append('images[]', state.images[i]);
     }
 
-    fetch('http://localhost:4404/citireports/incidents', {
+    fetch('http://localhost:4404/citireports/api/incidents', {
       method: 'POST',
       body: formData,
     })

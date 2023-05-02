@@ -71,7 +71,7 @@
 
 .IncidentList {
   display: flex;
-  /* flex-wrap: wrap; */
+  flex-wrap: wrap;
   justify-content: space-between;
   margin: 20px;
   gap: 20px;
@@ -101,10 +101,28 @@
 }
 
 .report {
-  background: rgb(81, 129, 212);
+  background: rgb(179, 181, 182);
   padding: 10px;
   border-radius: 8px;
   width: 300px;
+}
+
+.report h3 {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.report p {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+.report img {
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px;
+  display: block;
+  border-radius: 5px;
 }
 
 .form-input {

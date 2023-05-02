@@ -26,7 +26,7 @@ export const Login = () => {
 
   const onSubmit = (event) => {
     event.preventDefault();
-    fetch('http://localhost:4404/citireports/login', {
+    fetch('http://localhost:4404/citireports/api/login', {
       method: 'POST',
       body: JSON.stringify(state),
       headers: {

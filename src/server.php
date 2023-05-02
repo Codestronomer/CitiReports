@@ -21,7 +21,7 @@ $uri = $_SERVER['REQUEST_URI'];
 
 
 // Handle signup request
-if ($method === 'POST' && $uri === '/citireports/signup') {
+if ($method === 'POST' && $uri === '/citireports/api/signup') {
   $user = json_decode(file_get_contents('php://input'));
 
   // Check if email is already taken
@@ -53,7 +53,7 @@ if ($method === 'POST' && $uri === '/citireports/signup') {
 }
 
 // Handle login request
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/login') {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/api/login') {
     $user = json_decode(file_get_contents('php://input'));
     $email = $user->email;
     $password = $user->password;
@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/login') {
 }
 
 //handle report requests
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/incidents') {
+if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/api/incidents') {
   // Get the uploaded file data
   // Access form data submitted via multipart/form-data
   $category = $_POST['category'];
@@ -113,65 +113,97 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/incidents') 
 
   // If file upload form is submitted
   if ($images) {
-    $status = $statusMsg = '';
-    $status = 'error';
-    if(!empty($_FILES["image"]["name"])) {
-        // Get file info
-        $fileName = basename($_FILES["image"]["name"]);
-        $fileType = pathinfo($fileName, PATHINFO_EXTENSION);
+    // File upload configuration
+    $targetDir = "uploads/";
+    $allowTypes = array('jpg','png','jpeg','gif');
 
-        // Allow certain file formats
-        $allowTypes = array('jpg','png','jpeg','gif');
-        if(in_array($fileType, $allowTypes)){
-            $image = $_FILES['image']['tmp_name'];
-            $imgContent = addslashes(file_get_contents($image));
+    $statusMsg = $errorMsg = $insertValuesSQL = $errorUpload = $errorUploadType = '';
+    $fileNames = array_filter($_FILES['images']['name']);
+    if(!empty($fileNames)){
+        foreach($_FILES['images']['name'] as $key=>$val){
+            // File upload path
+            $fileName = basename($_FILES['images']['name'][$key]);
+            $targetFilePath = $targetDir . $fileName;
 
-            // Insert image content into database
-            $insert = $db->query("INSERT into images (id, image, post_id, created_at) VALUES (null, '$imgContent', '$post_id', NOW())");
-            if($insert){
-                $status = 'success';
-                $statusMsg = "File uploaded successfully.";
+            // Check whether file type is valid
+            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION);
+            if(in_array($fileType, $allowTypes)){
+                // Upload file to server
+                if(move_uploaded_file($_FILES["images"]["tmp_name"][$key], $targetFilePath)){
+                    // Image db insert sql
+                    $insertValuesSQL .= "('$fileName', NOW(), $post_id),";
+                }else{
+                    $errorUpload .= $_FILES['images']['name'][$key].' | ';
+                }
             }else{
-                $statusMsg = "File upload failed, please try again.";
+                $errorUploadType .= $_FILES['images']['name'][$key].' | ';
+            }
+        }
+
+        // Error message
+        $errorUpload = !empty($errorUpload)?'Upload Error: '.trim($errorUpload, ' | '):'';
+        $errorUploadType = !empty($errorUploadType)?'File Type Error: '.trim($errorUploadType, ' | '):'';
+        $errorMsg = !empty($errorUpload)?'<br/>'.$errorUpload.'<br/>'.$errorUploadType:'<br/>'.$errorUploadType;
+
+        if(!empty($insertValuesSQL)){
+            $insertValuesSQL = trim($insertValuesSQL, ',');
+            // Insert image file name into database
+            $insert = $conn->query("INSERT INTO images (file_name, uploaded_on, post_id) VALUES $insertValuesSQL");
+            if($insert){
+                $statusMsg = "Files are uploaded successfully.".$errorMsg;
+            }else{
+                $statusMsg = "Sorry, there was an error uploading your file.";
             }
         }else{
-            $statusMsg = 'Sorry, only JPG, JPEG, PNG, & GIF files are allowed to upload.';
+            $statusMsg = "Upload failed! ".$errorMsg;
         }
     }else{
-        $statusMsg = 'Please select an image file to upload.';
+        $statusMsg = 'Please select a file to upload.';
     }
+
+    echo $statusMsg;
+  }
+}
+
+//handle report retrieval requests
+if ($_SERVER["REQUEST_METHOD"] === "GET" && $uri === '/citireports/api/reports') {
+  // Retrieve reports data from database
+  $sql = "SELECT * FROM reports";
+  $result = $conn->query($sql);
+  $reports = array();
+
+  // Loop through each report
+  while ($row = $result->fetch_assoc()) {
+    $report = array(
+      'id' => $row['id'],
+      'category' => $row['category'],
+      'description' => $row['description'],
+      'location' => $row['location']
+    );
+
+    // Retrieve images associated with this report
+    $sql = "SELECT file_name FROM images WHERE post_id = {$row['id']}";
+    $imageResult = $conn->query($sql);
+    $images = array();
+
+    // Loop through each image and add its filename to the images array
+    while ($imageRow = $imageResult->fetch_assoc()) {
+      $images[] = $imageRow['file_name'];
+    }
+
+    // Add the images array to the report
+    $report['images'] = $images;
+
+    // Add the report to the reports array
+    $reports[] = $report;
   }
 
-  // Display status message
-  echo $statusMsg;
+  // Set the response header to JSON
+  header('Content-Type: application/json');
 
-  // loop through uploaded files
-  // foreach ($images['tmp_name'] as $key => $tmp_name) {
-  //     // handle each file
-  //     $file_name = $images['name'][$key];
-  //     $file_size = $images['size'][$key];
-  //     $file_tmp = $images['tmp_name'][$key];
-  //     $file_type = $images['type'][$key];
-  //
-  //     // move file to desired location
-  //     move_uploaded_file($file_tmp, "uploads/".$file_name);
-  // }
+  // Encode the reports array as JSON and return it
+  echo json_encode($reports);
 }
-
-if ($_SERVER["REQUEST_METHOD"] === "POST" && $uri === '/citireports/incidents') {
-
-  // Retrieve user data from database
-    $sql = "SELECT * FROM reports";
-    $result = $conn->query($sql);
-    $row = $result->fetch_assoc();
-    print_r($result);
-
-    if ($result->num_rows > 0) {
-        http_response_code(200); // Bad request
-        echo $result;
-        exit();
-}
-
 // Close MySQL connection
 $conn->close();
 ?>
